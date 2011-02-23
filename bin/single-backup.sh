@@ -1,3 +1,5 @@
+#!/bin/bash
+
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) )
 
 # check if machine backup directory exists

@@ -4,7 +4,7 @@ if [ -n $1 ]; then
 
 echo "------"
 echo "Usage:"
-echo "./addserver.sh server_to_backup.cilea.it"
+echo "$0 server_to_backup.cilea.it"
 echo ""
 
 else 
