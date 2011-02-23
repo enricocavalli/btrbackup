@@ -1,7 +1,10 @@
+INIZIALIZZAZIONE FS
 
+mkfs.btrfs /dev/sdb
+mkdir /rsbackup
+mount -o compress,noatime,nodiratime /dev/sdb /rsbackup
 
 SUL CLIENT
-
 
 addgroup --system backups
 
@@ -50,6 +53,8 @@ if [  0 = $return -o 24 = $return ]; then
 # fai due snapshot
 
 btrfs subvolume snapshot area_scracth /snaps/macchina/$now
+
+## il passaggio di delete preliminare è necessario
 btrvs subvolume delete /legato/macchina
 btrfs subvolume snapshot area_scratch /legato/macchina
 
@@ -61,7 +66,6 @@ fi
 ---------------- 
 
 
-mount --o compress,noatime,nodiratime /dev/sdb /rsbackup
 
 
 struttura filesystem
@@ -92,4 +96,4 @@ btrfs subvolume create /rsbackup/sito/macchina/.work
 
 
 
-
+main idea: http://forums.freebsd.org/showthread.php?t=3689
