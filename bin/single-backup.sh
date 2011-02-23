@@ -1,6 +1,6 @@
 #!/bin/bash
 
-INSTALLDIR=$( (cd -P $(dirname $0) && pwd) )
+INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
 
 # check if machine backup directory exists
 # load machine personanlizations
