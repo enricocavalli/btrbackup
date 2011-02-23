@@ -3,7 +3,7 @@ INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
 
 if [ ! "${1}" ]; then
 
-	echo "Usage: $0 server_to_backup.cilea.it"
+	echo "Usage: $0 server_to_backup"
 
 else 
 	. $INSTALLDIR/etc/rsbackup.conf
