@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/bash -e
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) )
-if [ -n $1 ]; then
+if [ ! "${1}" ]; then
 
 echo "------"
 echo "Usage:"
