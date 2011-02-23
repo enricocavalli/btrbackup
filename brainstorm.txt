@@ -1,0 +1,95 @@
+
+
+SUL CLIENT
+
+
+addgroup --system backups
+
+adduser rsbackup
+
+adduser rsbackup backups
+
+
+visudo
+Cmnd_Alias RSYNC = /usr/bin/rsync
+%backups ALL=(ALL) NOPASSWD: RSYNC
+
+
+
+#### fissi
+RSYNC_OPTIONS="--archive --stats --hard-links --partial  --delete --delete-excluded --numeric-ids --inplace -x"
+RSYNC_EXEC="sudo rsync"
+RSYNC_SSHCMD="/usr/bin/ssh"
+RSYNC_PORT="22"
+RSYNC_SSH_KEY="chiave.dsa"
+RSYNC_USER="rsbackup"
+# se serve ssh high performance
+
+
+### cambiano macchina per macchina o sito per sito
+RSYNC_SITE_OPTIONS="--compress --compress-level=9"
+RSYNC_EXCLUDES="file con exclude"
+FILESYSTEM_DA_BACKUPPARE="file con inclusioni"
+
+###
+S_DIR="$BACKUP_DIR/$SITE_DIR/$SERV_DIR"
+
+ rsync $RSYNC_OPTIONS $RSYNC_SITE_OPTIONS  \
+                        --exclude-from=$RSYNC_EXCLUDES \
+			--files-from=$FILESYSTEM_DA_BACKUPPARE -r \
+                        --rsync-path="$RSYNC_EXEC" --rsh="$RSYNC_SSHCMD -p $RSYNC_PORT -i $RSYNC_SSH_KEY" \
+                        --log-file=/rsbackup/logs/$RSYNC_SERVER.log \
+                        $RSYNC_USER@$RSYNC_SERVER:/ $S_DIR
+
+
+return=$?
+
+if [  0 = $return -o 24 = $return ]; then
+
+
+# fai due snapshot
+
+btrfs subvolume snapshot area_scracth /snaps/macchina/$now
+btrvs subvolume delete /legato/macchina
+btrfs subvolume snapshot area_scratch /legato/macchina
+
+delete dei vecchi
+
+fi
+
+
+---------------- 
+
+
+mount --o compress,noatime,nodiratime /dev/sdb /rsbackup
+
+
+struttura filesystem
+/rsbackup/bin/
+/rsbackup/logs/
+/rsbackup/etc/sito.site
+
+
+file di conf: 
+
+
+
+ macchina.conf
+macchina.include
+macchina.exclude
+
+mkdir /rsbackup/sito/macchina
+
+# non backuppare tramite legato
+
+echo "+skip: *" > /rsbackup/sito/macchina/.nsr
+btrfs subvolume create /rsbackup/sito/macchina/.work
+
+
+/rsbackup/sito/macchina/.work
+/rsbackup/sito/macchina/snap-`date`
+/rsbackup/sito/legato/macchina
+
+
+
+
