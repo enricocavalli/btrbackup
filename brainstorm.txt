@@ -4,21 +4,7 @@ mkfs.btrfs /dev/sdb
 mkdir /rsbackup
 mount -o compress,noatime,nodiratime /dev/sdb /rsbackup
 
-SUL CLIENT
-
-
-groupadd rsbackup
-useradd  -s /bin/bash -d /home/rsbackup -m -g rsbackup rsbackup
-
-
-visudo
-Cmnd_Alias RSYNC = /usr/bin/rsync
-rsbackup ALL=(ALL) NOPASSWD: RSYNC
-
-aggiustare hosts.allow e iptables se necessario
-
 ----
-
 
 struttura filesystem
 /rsbackup/bin/
@@ -27,13 +13,9 @@ struttura filesystem
 
 file di conf: 
 
-
-
-
 /rsbackup/sito/macchina/.work
 /rsbackup/sito/macchina/snap-`date`
 /rsbackup/sito/legato/macchina
-
 
 
 main idea: http://forums.freebsd.org/showthread.php?t=3689
