@@ -15,6 +15,7 @@ else
 
 	if ! [ $return = 0 ]; then
 		echo "Client not configured correclty"
+		exit 1
 	fi
 
 	if [ ! -d "$BACKUP_DIR/$1/.work" ]; then
@@ -30,6 +31,12 @@ else
 		cp $INSTALLDIR/etc/exclude.conf.default $BACKUP_DIR/$1/exclude
 		echo "RSYNC_FILESYSTEMS=$BACKUP_DIR/$1/filesystems" >> $INSTALLDIR/etc/hosts/$1.conf
 		echo "RSYNC_EXCLUDES=$BACKUP_DIR/$1/exclude" >> $INSTALLDIR/etc/hosts/$1.conf
+
+		# export via nfs for client restore
+		echo "$BACKUP_DIR/$1 $1(ro,no_subtree_check)" >> /etc/exports
+		exportfs -a
+
 	fi
+
 
 fi
