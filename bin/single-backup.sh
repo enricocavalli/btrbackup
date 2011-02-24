@@ -70,7 +70,7 @@ lastone=$(ls $BACKUP_DIR/$RSYNC_HOST 2>/dev/null | grep ^[0-9] | sort | tail -1 
 
 now=$(date +%Y-%m-%dT%H:%M:%S)
 
-rsync $RSYNC_OPTIONS $RSYNC_ADDITIONAL_OPTIONS  \
+/usr/bin/rsync $RSYNC_OPTIONS $RSYNC_ADDITIONAL_OPTIONS  \
 	--exclude-from=$RSYNC_EXCLUDES \
 	--files-from=$RSYNC_FILESYSTEMS -r \
 	--rsync-path="$RSYNC_EXEC" --rsh="$RSYNC_SSHCMD -p $RSYNC_PORT -i $RSYNC_SSH_KEY" \
