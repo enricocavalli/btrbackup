@@ -13,37 +13,50 @@ if [ ! "${1}" ]; then
 fi
 ####
 
+RSYNC_HOST=$1
+
 # check if machine backup directory exists
-if [ -e "$BACKUP_DIR/$1" ]; then
+if [ -e "$BACKUP_DIR/$RSYNC_HOST" ]; then
 
 	# importo varibili "globali"
 	. $INSTALLDIR/etc/rsbackup.conf
 
+	# importo il file di configurazione della singola macchina
+	. $INSTALLDIR/etc/hosts/$RSYNC_HOST.conf
+
 	# load machine personanlizations
 	# override delle variabili eventualmente definite
-	if [ -e "$BACKUP_DIR/$1/additional.conf" ]; then
-		. $BACKUP_DIR/$1/additional.conf
+	if [ -e "$BACKUP_DIR/$RSYNC_HOST/additional.conf" ]; then
+		. $BACKUP_DIR/$RSYNC_HOST/additional.conf
 	fi
 fi
 
-SERV_DIR=$1
+mkdir -p $INSTALLDIR/logs/$RSYNC_HOST
+
 rsync $RSYNC_OPTIONS $RSYNC_ADDITIONAL_OPTIONS  \
 	--exclude-from=$RSYNC_EXCLUDES \
 	--files-from=$RSYNC_FILESYSTEMS -r \
 	--rsync-path="$RSYNC_EXEC" --rsh="$RSYNC_SSHCMD -p $RSYNC_PORT -i $RSYNC_SSH_KEY" \
-	--log-file=/rsbackup/logs/$RSYNC_SERVER.log \
-	$RSYNC_USER@$RSYNC_SERVER:/ $BACKUP_DIR/$SERV_DIR
+	--log-file=$INSTALLDIR/logs/$RSYNC_HOST/rsync.log \
+	$RSYNC_USER@$RSYNC_HOST:/ $BACKUP_DIR/$RSYNC_HOST/.work
 	
 return=$?
 
+# savelog
+
 if [  0 = $return -o 24 = $return ]; then
 
+	now=$(date +%Y-%m-%dT%H:%M:%S)
 
-# fai due snapshot
-btrfs subvolume snapshot area_scracth /snaps/macchina/$now
+	btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/$RSYNC_HOST/$now >> $INSTALLDIR/logs/$RSYNC_HOST/rsync.log
 
-## il passaggio di delete preliminare è necessario
-btrvs subvolume delete /legato/macchina
-btrfs subvolume snapshot area_scratch /legato/macchina
-delete dei vecchi
+
+	if [ "${LEGATO}" ]; then 
+		btrfs subvolume delete  $BACKUP_DIR/legato/$RSYNC_HOST 2>/dev/null
+		btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/legato/$RSYNC_HOST
+	fi
+
+	###delete dei vecchi
 fi
+
+savelog $INSTALLDIR/logs/$RSYNC_HOST/rsync.log

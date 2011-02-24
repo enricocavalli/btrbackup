@@ -6,18 +6,18 @@ mount -o compress,noatime,nodiratime /dev/sdb /rsbackup
 
 SUL CLIENT
 
-addgroup --system backups
 
-adduser rsbackup
-
-adduser rsbackup backups
+groupadd rsbackup
+useradd  -s /bin/bash -d /home/rsbackup -m -g rsbackup rsbackup
 
 
 visudo
 Cmnd_Alias RSYNC = /usr/bin/rsync
-%backups ALL=(ALL) NOPASSWD: RSYNC
+rsbackup ALL=(ALL) NOPASSWD: RSYNC
 
+aggiustare hosts.allow e iptables se necessario
 
+----
 
 
 struttura filesystem
