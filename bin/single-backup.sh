@@ -79,8 +79,6 @@ now=$(date +%Y-%m-%dT%H:%M:%S)
 	
 return=$?
 
-# savelog
-
 if [  0 = $return -o 24 = $return ]; then
 
 
@@ -89,10 +87,8 @@ if [  0 = $return -o 24 = $return ]; then
 
 	if [ "${LEGATO}" ]; then 
 		btrfs subvolume delete  $BACKUP_DIR/legato/$RSYNC_HOST 2>/dev/null >> $LOGFILE
-		btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/legato/$RSYNC_HOST  >> $INSTALLDIR/logs/$RSYNC_HOST/rsync.log
+		btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/legato/$RSYNC_HOST  >> $LOGFILE
 	fi
-
-	###delete dei vecchi
 
 	elenco=$(ls $BACKUP_DIR/$RSYNC_HOST | grep ^[0-9])
 	oldest=$(ls $BACKUP_DIR/$RSYNC_HOST | grep ^[0-9] | head -1)
@@ -154,6 +150,6 @@ else
 
 fi 
 
-savelog $INSTALLDIR/logs/$RSYNC_HOST/rsync.log
+savelog $LOGFILE
 
 
