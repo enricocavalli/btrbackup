@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash 
 
 # ARG1: host da backuppare (e.g. esx-aiace.ciela.it)
 #
@@ -55,7 +55,6 @@ dateDiff (){
 
 	# importo varibili "globali"
 	. $INSTALLDIR/etc/rsbackup.conf
-
 	# importo il file di configurazione della singola macchina
 	. $INSTALLDIR/etc/hosts/$RSYNC_HOST.conf
 
@@ -142,13 +141,13 @@ if [  0 = $return -o 24 = $return ]; then
 
 		### remove the oldest if ....???
 	
-	 if [ -z $MAILTO ]; then
+	 if ! [ -z $MAILTO ]; then
                 mail -s "BACKUP OK - $RSYNC_HOST" $MAILTO < $LOGFILE
         fi
 
 else
 
-	if [ -z $MAILTO ]; then
+	if ! [ -z $MAILTO ]; then
 		mail -s "BACKUP ERROR - $RSYNC_HOST" $MAILTO < $LOGFILE
 	fi
 
