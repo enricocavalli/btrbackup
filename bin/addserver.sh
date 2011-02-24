@@ -7,6 +7,16 @@ if [ ! "${1}" ]; then
 
 else 
 	. $INSTALLDIR/etc/rsbackup.conf
+
+	echo "Checking client configuration, please answer yes to fingerprint request"
+
+	ssh -i $INSTALLDIR/etc/chiave.dsa rsbackup@$1 /bin/true
+		return = $?
+
+	if ! [ $return = 0 ]; then
+		echo "Client not configured correclty"
+	fi
+
 	if [ ! -d "$BACKUP_DIR/$1/.work" ]; then
 
 		mkdir $BACKUP_DIR/$1

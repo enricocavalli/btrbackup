@@ -15,6 +15,17 @@ RSYNC_HOST=$1
 LOGFILE="$INSTALLDIR/logs/$RSYNC_HOST/rsync.log"
 LOCK="$INSTALLDIR/logs/$RSYNC_HOST/lock"
 
+# importo varibili "globali"
+. $INSTALLDIR/etc/rsbackup.conf
+# importo il file di configurazione della singola macchina
+. $INSTALLDIR/etc/hosts/$RSYNC_HOST.conf
+
+# load machine personanlizations
+# override delle variabili eventualmente definite
+if [ -f $BACKUP_DIR/$RSYNC_HOST/additional.conf ]; then
+	. $BACKUP_DIR/$RSYNC_HOST/additional.conf
+fi
+
 mkdir -p $INSTALLDIR/logs/$RSYNC_HOST
 
 set -e
@@ -53,16 +64,6 @@ dateDiff (){
     echo $((diffSec/sec*abs))
 }
 
-	# importo varibili "globali"
-	. $INSTALLDIR/etc/rsbackup.conf
-	# importo il file di configurazione della singola macchina
-	. $INSTALLDIR/etc/hosts/$RSYNC_HOST.conf
-
-	# load machine personanlizations
-	# override delle variabili eventualmente definite
-	if [ -f $BACKUP_DIR/$RSYNC_HOST/additional.conf ]; then
-		. $BACKUP_DIR/$RSYNC_HOST/additional.conf
-	fi
 
 
 lastone=$(ls $BACKUP_DIR/$RSYNC_HOST 2>/dev/null | grep ^[0-9] | sort | tail -1 | sed -e s'/T/ /')
