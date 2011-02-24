@@ -14,7 +14,7 @@ fi
 ####
 
 RSYNC_HOST=$1
-
+LOGFILE="$INSTALLDIR/logs/$RSYNC_HOST/rsync.log"
 # check if machine backup directory exists
 if [ -e "$BACKUP_DIR/$RSYNC_HOST" ]; then
 
@@ -37,8 +37,8 @@ rsync $RSYNC_OPTIONS $RSYNC_ADDITIONAL_OPTIONS  \
 	--exclude-from=$RSYNC_EXCLUDES \
 	--files-from=$RSYNC_FILESYSTEMS -r \
 	--rsync-path="$RSYNC_EXEC" --rsh="$RSYNC_SSHCMD -p $RSYNC_PORT -i $RSYNC_SSH_KEY" \
-	--log-file=$INSTALLDIR/logs/$RSYNC_HOST/rsync.log \
-	$RSYNC_USER@$RSYNC_HOST:/ $BACKUP_DIR/$RSYNC_HOST/.work
+	--log-file=$LOGFILE \
+	$RSYNC_USER@$RSYNC_HOST:/ $BACKUP_DIR/$RSYNC_HOST/.work  >> $LOGFILE
 	
 return=$?
 
@@ -48,15 +48,26 @@ if [  0 = $return -o 24 = $return ]; then
 
 	now=$(date +%Y-%m-%dT%H:%M:%S)
 
-	btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/$RSYNC_HOST/$now >> $INSTALLDIR/logs/$RSYNC_HOST/rsync.log
+	btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/$RSYNC_HOST/$now >> $LOGFILE
 
 
 	if [ "${LEGATO}" ]; then 
-		btrfs subvolume delete  $BACKUP_DIR/legato/$RSYNC_HOST 2>/dev/null
-		btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/legato/$RSYNC_HOST
+		btrfs subvolume delete  $BACKUP_DIR/legato/$RSYNC_HOST 2>/dev/null >> $LOGFILE
+		btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/legato/$RSYNC_HOST  >> $INSTALLDIR/logs/$RSYNC_HOST/rsync.log
 	fi
 
 	###delete dei vecchi
-fi
+	
+	 if [ -z $MAILTO ]; then
+                mail -s "BACKUP OK - $RSYNC_HOST" $MAILTO < $LOGFILE
+        fi
+
+else
+
+	if [ -z $MAILTO ]; then
+		mail -s "BACKUP ERROR - $RSYNC_HOST" $MAILTO < $LOGFILE
+	fi
+
+fi 
 
 savelog $INSTALLDIR/logs/$RSYNC_HOST/rsync.log
