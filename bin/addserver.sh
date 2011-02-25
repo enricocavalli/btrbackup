@@ -28,14 +28,14 @@ else
 		echo "+skip: *" > $BACKUP_DIR/$1/.nsr
 
 		# generating configuration file ...
-		cp $INSTALLDIR/etc/filesystems.conf.default $BACKUP_DIR/$1/conf/filesystems
-		cp $INSTALLDIR/etc/exclude.conf.default $BACKUP_DIR/$1/conf/exclude
-		echo "RSYNC_FILESYSTEMS=$BACKUP_DIR/$1/conf/filesystems" >> $INSTALLDIR/etc/hosts/$1.conf
-		echo "RSYNC_EXCLUDES=$BACKUP_DIR/$1/conf/exclude" >> $INSTALLDIR/etc/hosts/$1.conf
+		cp $INSTALLDIR/etc/filesystems.conf.default $BACKUP_DIR/$1/conf/filesystems.conf
+		cp $INSTALLDIR/etc/exclude.conf.default $BACKUP_DIR/$1/conf/exclude.conf
+		echo "RSYNC_FILESYSTEMS=$BACKUP_DIR/$1/conf/filesystems.conf" >> $INSTALLDIR/etc/hosts/$1.conf
+		echo "RSYNC_EXCLUDES=$BACKUP_DIR/$1/conf/exclude.conf" >> $INSTALLDIR/etc/hosts/$1.conf
 
 		# export via nfs for client restore
 		echo "$BACKUP_DIR/$1 $1(ro,no_subtree_check)" >> /etc/exports
-		echo "$BACKUP_DIR/$1/conf $1(rw,no_subtree_check)" >> /etc/exports
+		echo "$BACKUP_DIR/$1/conf $1(rw,no_subtree_check,no_root_squash)" >> /etc/exports
 		exportfs -a
 
 	fi
