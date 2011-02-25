@@ -22,8 +22,8 @@ LOCK="$INSTALLDIR/logs/$RSYNC_HOST/lock"
 
 # load machine personanlizations
 # override delle variabili eventualmente definite
-if [ -f $BACKUP_DIR/$RSYNC_HOST/additional.conf ]; then
-	. $BACKUP_DIR/$RSYNC_HOST/additional.conf
+if [ -f $BACKUP_DIR/$RSYNC_HOST/conf/additional.conf ]; then
+	. $BACKUP_DIR/$RSYNC_HOST/conf/additional.conf
 fi
 
 mkdir -p $INSTALLDIR/logs/$RSYNC_HOST
