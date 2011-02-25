@@ -80,7 +80,7 @@ now=$(date +%Y-%m-%dT%H:%M:%S)
 	--files-from=$RSYNC_FILESYSTEMS -r \
 	--rsync-path="$RSYNC_EXEC" --rsh="$RSYNC_SSHCMD -p $RSYNC_PORT -i $RSYNC_SSH_KEY" \
 	--log-file=$LOGFILE \
-	$RSYNC_USER@$RSYNC_HOST:/ $BACKUP_DIR/$CONFIG_NAME/.work  >> $LOGFILE
+	$RSYNC_USER@$RSYNC_HOST:/ $BACKUP_DIR/$CONFIG_NAME/.work 2>&1 > /dev/null
 	
 return=$?
 
@@ -155,6 +155,6 @@ else
 
 fi 
 
-savelog $LOGFILE
+savelog $LOGFILE > /dev/null 2>&1
 
 
