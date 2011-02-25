@@ -1,16 +1,20 @@
 #!/bin/bash -e
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
 
-if [ ! "${1}" ]; then
+if [ ! "${2}" ]; then
 
-	echo "Usage: $0 server_to_backup"
+	echo "Usage: $0 server_to_backup config_name [ mailto ]"
 
 else 
+
+	HOST_NAME=$1
+	CONFIG_NAME=$2
+
 	. $INSTALLDIR/etc/rsbackup.conf
 
 	echo "Checking client configuration, please answer yes to fingerprint request"
 
-	ssh -i $INSTALLDIR/etc/chiave.dsa rsbackup@$1 /bin/true
+	ssh -i $INSTALLDIR/etc/chiave.dsa rsbackup@$HOST_NAME /bin/true
 	return=$?
 
 	if ! [ $return = 0 ]; then
@@ -18,24 +22,33 @@ else
 		exit 1
 	fi
 
-	if [ ! -d "$BACKUP_DIR/$1/.work" ]; then
+	if [ ! -d "$BACKUP_DIR/$CONFIG_NAME/.work" ]; then
 
-		mkdir $BACKUP_DIR/$1
-		mkdir $BACKUP_DIR/$1/conf
-		btrfs subvolume create $BACKUP_DIR/$1/.work
+		mkdir $BACKUP_DIR/$CONFIG_NAME
+		mkdir $BACKUP_DIR/$CONFIG_NAME/conf
+		btrfs subvolume create $BACKUP_DIR/$CONFIG_NAME/.work
 
 		# do not backup with legato
-		echo "+skip: *" > $BACKUP_DIR/$1/.nsr
+		echo "+skip: *" > $BACKUP_DIR/$CONFIG_NAME/.nsr
 
 		# generating configuration file ...
-		cp $INSTALLDIR/etc/filesystems.conf.default $BACKUP_DIR/$1/conf/filesystems.conf
-		cp $INSTALLDIR/etc/exclude.conf.default $BACKUP_DIR/$1/conf/exclude.conf
-		echo "RSYNC_FILESYSTEMS=$BACKUP_DIR/$1/conf/filesystems.conf" >> $INSTALLDIR/etc/hosts/$1.conf
-		echo "RSYNC_EXCLUDES=$BACKUP_DIR/$1/conf/exclude.conf" >> $INSTALLDIR/etc/hosts/$1.conf
+		cp $INSTALLDIR/etc/filesystems.conf.default $BACKUP_DIR/$CONFIG_NAME/conf/filesystems.conf
+		cp $INSTALLDIR/etc/exclude.conf.default $BACKUP_DIR/$CONFIG_NAME/conf/exclude.conf
+	
+		echo "RSYNC_HOST=$HOST_NAME" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
+		echo "RSYNC_FILESYSTEMS=$BACKUP_DIR/$CONFIG_NAME/conf/filesystems.conf" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
+		echo "RSYNC_EXCLUDES=$BACKUP_DIR/$CONFIG_NAME/conf/exclude.conf" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
+
+		if [ ${3} ]; then
+			echo "MAILTO=\"$3\"" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
+			mail -s "Host $HOST_NAME configurato per il backup" $3 < /dev/null
+		fi
 
 		# export via nfs for client restore
-		echo "$BACKUP_DIR/$1 $1(ro,no_subtree_check,no_root_squash)" >> /etc/exports
-		echo "$BACKUP_DIR/$1/conf $1(rw,no_subtree_check,no_root_squash)" >> /etc/exports
+		echo >> /etc/exports
+		echo "#$CONFIG_NAME" >> /etc/exports
+		echo "$BACKUP_DIR/$CONFIG_NAME $HOST_NAME(ro,no_subtree_check,no_root_squash)" >> /etc/exports
+		echo "$BACKUP_DIR/$CONFIG_NAME/conf $HOST_NAME(rw,no_subtree_check,no_root_squash)" >> /etc/exports
 		exportfs -a
 
 	fi

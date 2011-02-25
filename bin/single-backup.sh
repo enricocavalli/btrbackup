@@ -7,31 +7,36 @@
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
 
 if [ ! "${1}" ]; then
-        echo "Usage: $0 server_to_backup"
+        echo "Usage: $0 CONFIG_NAME"
 	exit
 fi
 
-RSYNC_HOST=$1
-LOGFILE="$INSTALLDIR/logs/$RSYNC_HOST/rsync.log"
-LOCK="$INSTALLDIR/logs/$RSYNC_HOST/lock"
+CONFIG_NAME=$1
+LOGFILE="$INSTALLDIR/logs/$CONFIG_NAME/rsync.log"
+LOCK="$INSTALLDIR/logs/$CONFIG_NAME/lock"
+
+if ! [ -f $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf ]; then
+	echo "Configuration file $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf not found"
+	exit 1
+fi
 
 # importo varibili "globali"
 . $INSTALLDIR/etc/rsbackup.conf
 # importo il file di configurazione della singola macchina
-. $INSTALLDIR/etc/hosts/$RSYNC_HOST.conf
+. $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
 
 # load machine personanlizations
 # override delle variabili eventualmente definite
-if [ -f $BACKUP_DIR/$RSYNC_HOST/conf/additional.conf ]; then
-	. $BACKUP_DIR/$RSYNC_HOST/conf/additional.conf
+if [ -f $BACKUP_DIR/$CONFIG_NAME/conf/additional.conf ]; then
+	. $BACKUP_DIR/$CONFIG_NAME/conf/additional.conf
 fi
 
-mkdir -p $INSTALLDIR/logs/$RSYNC_HOST
+mkdir -p $INSTALLDIR/logs/$CONFIG_NAME
 
 set -e
 
-if [ ! -d $BACKUP_DIR/$RSYNC_HOST ]; then
-	echo backup dir not created
+if [ ! -d $BACKUP_DIR/$CONFIG_NAME ]; then
+	echo "Backup directory not found: $BACKUP_DIR/$CONFIG_NAME"
 	exit 1
 fi
 
@@ -66,7 +71,7 @@ dateDiff (){
 
 
 
-lastone=$(ls $BACKUP_DIR/$RSYNC_HOST 2>/dev/null | grep ^[0-9] | sort | tail -1 | sed -e s'/T/ /')
+lastone=$(ls $BACKUP_DIR/$CONFIG_NAME 2>/dev/null | grep ^[0-9] | sort | tail -1 | sed -e s'/T/ /')
 
 now=$(date +%Y-%m-%dT%H:%M:%S)
 
@@ -75,23 +80,23 @@ now=$(date +%Y-%m-%dT%H:%M:%S)
 	--files-from=$RSYNC_FILESYSTEMS -r \
 	--rsync-path="$RSYNC_EXEC" --rsh="$RSYNC_SSHCMD -p $RSYNC_PORT -i $RSYNC_SSH_KEY" \
 	--log-file=$LOGFILE \
-	$RSYNC_USER@$RSYNC_HOST:/ $BACKUP_DIR/$RSYNC_HOST/.work  >> $LOGFILE
+	$RSYNC_USER@$RSYNC_HOST:/ $BACKUP_DIR/$CONFIG_NAME/.work  >> $LOGFILE
 	
 return=$?
 
 if [  0 = $return -o 24 = $return ]; then
 
 
-	btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/$RSYNC_HOST/$now >> $LOGFILE
+	btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/$CONFIG_NAME/$now >> $LOGFILE
 
 
 	if [ "${LEGATO}" ]; then 
-		btrfs subvolume delete  $BACKUP_DIR/legato/$RSYNC_HOST 2>/dev/null >> $LOGFILE
-		btrfs subvolume snapshot $BACKUP_DIR/$RSYNC_HOST/.work $BACKUP_DIR/legato/$RSYNC_HOST  >> $LOGFILE
+		btrfs subvolume delete  $BACKUP_DIR/legato/$CONFIG_NAME 2>/dev/null >> $LOGFILE
+		btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/legato/$CONFIG_NAME  >> $LOGFILE
 	fi
 
-	elenco=$(ls $BACKUP_DIR/$RSYNC_HOST | grep ^[0-9])
-	oldest=$(ls $BACKUP_DIR/$RSYNC_HOST | grep ^[0-9] | head -1)
+	elenco=$(ls $BACKUP_DIR/$CONFIG_NAME | grep ^[0-9])
+	oldest=$(ls $BACKUP_DIR/$CONFIG_NAME | grep ^[0-9] | head -1)
 	kept=0
 	
 	for line in $elenco
@@ -108,7 +113,7 @@ if [  0 = $return -o 24 = $return ]; then
 		if [ $ore -lt 24 ]; then
                         hourly[$ore]=$((${hourly[$ore]}+1))
                         if [ ${hourly[$ore]} -gt 1 -a $ore -ge 1 ]; then
-                        btrfs subvolume delete $BACKUP_DIR/$RSYNC_HOST/$line >> $LOGFILE 2>&1
+                        btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line >> $LOGFILE 2>&1
                         else
                         kept=$(($kept + 1))
                         fi
@@ -117,7 +122,7 @@ if [  0 = $return -o 24 = $return ]; then
                         daily[$giornomese]=$((${daily[$giornomese]}+1))
 
                          if [ ${daily[$giornomese]} -gt 1 ]; then
-                        btrfs subvolume delete $BACKUP_DIR/$RSYNC_HOST/$line >> $LOGFILE 2>&1
+                        btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line >> $LOGFILE 2>&1
                         else
                         kept=$(($kept + 1))
                         fi
@@ -126,7 +131,7 @@ if [  0 = $return -o 24 = $return ]; then
  if [ $giorni -gt 30 ]; then
                         weekly[$settimana]=$((${weekly[$settimana]}+1))
                          if [ ${weekly[$settimana]} -gt 1 ]; then
-                        btrfs subvolume delete $BACKUP_DIR/$RSYNC_HOST/$line >> $LOGFILE 2>&1
+                        btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line >> $LOGFILE 2>&1
                         else
                         kept=$(($kept + 1))
                         fi
@@ -139,13 +144,13 @@ if [  0 = $return -o 24 = $return ]; then
 		### remove the oldest if ....???
 	
 	 if ! [ -z $MAILTO ]; then
-                mail -s "BACKUP OK - $RSYNC_HOST" $MAILTO < $LOGFILE
+                mail -s "BACKUP OK - $CONFIG_NAME" $MAILTO < $LOGFILE
         fi
 
 else
 
 	if ! [ -z $MAILTO ]; then
-		mail -s "BACKUP ERROR - $RSYNC_HOST" $MAILTO < $LOGFILE
+		mail -s "BACKUP ERROR - $CONFIG_NAME" $MAILTO < $LOGFILE
 	fi
 
 fi 
