@@ -2,14 +2,22 @@
 #
 # Script per l'esecuzione dei backup
 
-##### conf
-MAX_BACKUPS=2
+while getopts "j:" OPZIONE
 
-#####
+do 
+	case $OPZIONE in
+		j ) parallel_jobs=$OPTARG;;
+	esac
+done
+
+shift $(($OPTIND - 1))
+
+MAX_BACKUPS=${parallel_jobs:-"2"}
+
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
 if [ ! "${1}" ]; then
 
-	echo "Usage: $0 config1 config2 config3 ..."
+	echo "Usage: $0 [ -j <max_jobs> ] config1 config2 config3 ..."
 else
 
 

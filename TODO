@@ -1,0 +1,6 @@
+* redirigere output ed error di single-backup: pare non eserci
+alcun verso ma lo stderror dell'ssh che viene lanciato da rsync
+non è trappabile con > 2>
+
+
+* implementare uno scheduler vero e proprio
