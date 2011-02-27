@@ -31,7 +31,6 @@ if [ -f $BACKUP_DIR/$CONFIG_NAME/conf/additional.conf ]; then
 	. $BACKUP_DIR/$CONFIG_NAME/conf/additional.conf
 fi
 
-mkdir -p $INSTALLDIR/logs/$CONFIG_NAME
 
 set -e
 
@@ -40,8 +39,10 @@ if [ ! -d $BACKUP_DIR/$CONFIG_NAME ]; then
 	exit 1
 fi
 
-if lockfile -! -l 43200 -r 0 "$LOCK"; then
-  echo unable to start rsync, lock file exists
+mkdir -p $INSTALLDIR/logs/$CONFIG_NAME
+
+if lockfile -! -l 43200 -r 0 "$LOCK" 2>&1 ; then
+  echo "unable to start rsync, lock file $LOCK exists"
   exit 1
 fi
 

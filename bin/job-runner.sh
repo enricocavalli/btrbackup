@@ -31,7 +31,7 @@ for i in $HOSTS; do
 	fi
 	
 	# command
-	$INSTALLDIR/bin/single-backup.sh $i &
+	$INSTALLDIR/bin/single-backup.sh $i 2>&1 >> $INSTALLDIR/logs/job-runner.log &
 
 	while [ 1 ]; do
 		# jobs in corso ...
@@ -45,3 +45,5 @@ for i in $HOSTS; do
 done
 echo "Jobs esauriti"
 fi
+
+savelog $INSTALLDIR/logs/job-runner.log > /dev/null
