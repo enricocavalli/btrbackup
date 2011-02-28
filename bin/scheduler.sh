@@ -16,13 +16,13 @@ while [ 1 ]; do
 	lock="$INSTALLDIR/tmp/$(echo "$hosts" | md5sum | grep -o "[a-z0-9]\{32\}")"
 
 	if [ "$hosts" == "" ]; then
-		echo "No suitable host found ..."
+		echo "No suitable host found ..." > /dev/null
 	else 
 		lockfile -l 3600 -r 0 "$lock" 2>&1
 		return=$?
 		if [ "$return" == "0" ]; then
 
-		echo "Initializing backups ..."
+		#echo "Initializing backups ..."
 	
 		# creo file per il comando da lanciare
 		# evito che venga lanciato all'iterazione successiva
@@ -39,16 +39,16 @@ while [ 1 ]; do
 			fi
 		done 
 		# lancio job-runner.sh && rm $lock
-		echo "Time: $now"
-		echo "Max Backups: $max_backups"
-		echo "Starting: $hosts"
+		echo "Time: $now" >> /tmp/scheduler.log
+		echo "Max Backups: $max_backups" >> /tmp/scheduler.log
+		echo "Starting: $hosts" >> /tmp/scheduler.log
+		echo "--------------------" >> /tmp/scheduler.log
 		
 		#(sleep 15 && rm $lock) &
 		# TODO: cosa succede se job-runner ritorna non zero? mi resta appeso il file di lock?
 		$INSTALLDIR/bin/job-runner.sh -j $max_backups $hosts  &
 		else 
-		echo "Backup still running ..."
-		echo ""
+		echo "Backup still running ..." > /dev/null
 		fi
 	fi
 
