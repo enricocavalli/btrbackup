@@ -12,7 +12,8 @@ if [ ! "${1}" ]; then
 fi
 
 CONFIG_NAME=$1
-LOGFILE="$INSTALLDIR/logs/$CONFIG_NAME/rsync.log"
+LOGFILE="$INSTALLDIR/logs/$CONFIG_NAME/rsbackup.log"
+LOGFILE_RSYNC="$INSTALLDIR/logs/$CONFIG_NAME/rsbackup-rsync.log"
 LOCK="$INSTALLDIR/logs/$CONFIG_NAME/lock"
 
 if ! [ -f $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf ]; then
@@ -80,7 +81,7 @@ now=$(date +%Y-%m-%dT%H:%M:%S)
 	--exclude-from=$RSYNC_EXCLUDES \
 	--files-from=$RSYNC_FILESYSTEMS -r \
 	--rsync-path="$RSYNC_EXEC" --rsh="$RSYNC_SSHCMD -p $RSYNC_PORT -i $RSYNC_SSH_KEY" \
-	--log-file=$LOGFILE \
+	--log-file=$LOGFILE_RSYNC \
 	$RSYNC_USER@$RSYNC_HOST:/ $BACKUP_DIR/$CONFIG_NAME/.work 2>&1 > /dev/null
 	
 return=$?
@@ -145,17 +146,16 @@ if [  0 = $return -o 24 = $return ]; then
 		### remove the oldest if ....???
 	
 	 if ! [ -z $MAILTO ]; then
-                mail -s "BACKUP OK - $CONFIG_NAME" $MAILTO < $LOGFILE
+                mutt -s "BACKUP OK - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
         fi
 
 else
 
 	if ! [ -z $MAILTO ]; then
-		mail -s "BACKUP ERROR - $CONFIG_NAME" $MAILTO < $LOGFILE
+		mutt -s "BACKUP ERROR - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
 	fi
 
 fi 
 
 savelog $LOGFILE > /dev/null 2>&1
-
-
+savelog $LOGFILE_RSYNC > /dev/null 2>&1

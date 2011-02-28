@@ -1,1 +1,3 @@
 # README
+depends: rsync >= 3.0.7 mutt debianutils (per savelog) procmail (per lockfile) bash (>=4 ?)
+
