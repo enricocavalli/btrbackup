@@ -94,7 +94,12 @@ if [  0 = $return -o 24 = $return ]; then
 
 	if [ "${LEGATO}" ]; then 
 		btrfs subvolume delete  $BACKUP_DIR/legato/$CONFIG_NAME 2>/dev/null >> $LOGFILE
-		btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/legato/$CONFIG_NAME  >> $LOGFILE
+		return=$?
+		if [ "$return" == "0" -o "$return" == "12" ]; then # ERROR 12 means legato snaphost does non exist
+			btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/legato/$CONFIG_NAME  >> $LOGFILE
+		else
+			echo "Cannot delete legato snaoshot $BACKUP_DIR/legato/$CONFIG_NAME" >> $LOGFILE
+		fi
 	fi
 
 	elenco=$(ls $BACKUP_DIR/$CONFIG_NAME | grep ^[0-9])
