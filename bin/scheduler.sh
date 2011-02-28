@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 # demone scheduler
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
@@ -17,14 +17,15 @@ while [ 1 ]; do
 
 	if [ "$hosts" == "" ]; then
 		echo "No suitable host found ..."
-
-	elif [ ! -e $lock ]; then
+	else 
+		lockfile -l 3600 -r 0 "$lock" 2>&1
+		return=$?
+		if [ "$return" == "0" ]; then
 
 		echo "Initializing backups ..."
 	
 		# creo file per il comando da lanciare
 		# evito che venga lanciato all'iterazione successiva
-		touch $lock
 		
 		for i in $hosts; do
 			# ulteriore cofigurazione del comando da laciare ...
@@ -44,10 +45,11 @@ while [ 1 ]; do
 		
 		#(sleep 15 && rm $lock) &
 		# TODO: cosa succede se job-runner ritorna non zero? mi resta appeso il file di lock?
-		($INSTALLDIR/bin/job-runner.sh -j $max_backups $hosts && rm $lock) &
-	else 
+		$INSTALLDIR/bin/job-runner.sh -j $max_backups $hosts  &
+		else 
 		echo "Backup still running ..."
 		echo ""
+		fi
 	fi
 
 	sleep 10
