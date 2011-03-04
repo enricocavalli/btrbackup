@@ -1,0 +1,30 @@
+#!/bin/sh -e
+#
+#
+RSPATH=/root/rsbackup
+
+case "$1" in
+    start)
+        $RSPATH/bin/scheduler.sh >&2 &
+	STATUS="$?"
+	echo "Starting scheduler ..."
+	if [ "$STATUS" -eq "0" ]; then
+		echo "OK"
+	else
+		echo "Scheduler failed!"
+	fi
+        ;;
+    stop)
+        killall scheduler.sh >&2 2>/dev/null
+	STATUS=$?
+	if [ "$STATUS" -ne "0" ]; then
+		echo "Process not found ..."
+	else
+		echo "Scheduler stopped"
+	fi
+        ;;
+    *)
+        echo "Usage: $0 {start|stop}" >&2
+        exit 1
+        ;;
+esac
