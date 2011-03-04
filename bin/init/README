@@ -1,6 +1,4 @@
 Script da copiare in init.d
 
 cp scheduler /etc/init.d
-
-- includere in /etc/rc.local il comando
-/etc/init.d/scheduler start
+update-rc.d -f scheduler defualts
