@@ -1,3 +1,36 @@
-# README
-depends: rsync >= 3.0.7 mutt debianutils (per savelog) procmail (per lockfile) bash (>=4 ?)
+Il software dipende da 
+rsync >= 3.0.7
+mutt
+debianutils (per savelog) 
+procmail (per lockfile)
+bash (recente, senz'altro >=3)
+
+
+INIZIALIZZAZIONE FS
+
+mkfs.btrfs /dev/sdb
+mkdir /rsbackup
+mount -o compress,noatime,nodiratime /dev/sdb /rsbackup
+
+
+NOTE SU INCLUSIONI ED ESCLUSIONI ----
+
+Per quanto riguarda gli include, si possono backuppare solo certe parti di macchina, 
+ad esempio
+
+/etc/asterisk
+/usr/local
+
+backuppa quelle due sole directory. Per via delle opzioni files-from e dell'rsync che 
+parte da / (tra mille virgolette), il tutto risulta sotto /rsbackup/macchina/etc/asterisk 
+ovvero con percorso completo
+
+Per le esclusioni, occhio alla diversità
+
+voicemail/
+
+voicemail/**
+
+la prima non crea nemmeno la directory voicemail, la seconda crea la dir ma non backuppa niente
+
 
