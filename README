@@ -34,3 +34,9 @@ voicemail/**
 la prima non crea nemmeno la directory voicemail, la seconda crea la dir ma non backuppa niente
 
 
+----- 
+
+per impedire a mutt di salvare la posta in uscita usare
+
+# more .muttrc 
+set record="/dev/null"

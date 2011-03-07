@@ -1,4 +1,2 @@
 * migliorare i messaggi di errore con riferimenti a cio' che si sta facendo
 pid, ora, configurazione usata e mettere tutti in file di log
-
-* pare che mutt crei un file "sent" nella home di root... indagare
