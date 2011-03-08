@@ -1,5 +1,9 @@
-Script da copiare in init.d
 
-cp scheduler.init /etc/init.d/scheduler
+Questa directory contine lo script da copiare in init.d per la partenza 
+automatica dello scheduler
 
-update-rc.d -f scheduler defualts
+# cp scheduler.init /etc/init.d/scheduler
+# update-rc.d -f scheduler defualts
+
+E' presente inoltre uno script di esempio per configurare un client generico
+
