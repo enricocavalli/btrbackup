@@ -1,42 +1,64 @@
-Il software dipende da 
+INTRODUZIONE
+
+
+DIPENDENZE
+
+Il software dipende da
+
 rsync >= 3.0.7
 mutt
-debianutils (per savelog) 
+debianutils (per savelog)
 procmail (per lockfile)
 bash (recente, senz'altro >=3)
 
 
-INIZIALIZZAZIONE FS
+INIZIALIZZAZIONE DEL FILESYSTEM LATO SERVER
+
+Il filesystem btrfs viene inizializzato senza opzioni particolari, ma è
+opportuno montarlo con le opzioni compress e noatime per questioni di
+occupazione spazio disco e performance.
 
 mkfs.btrfs /dev/sdb
 mkdir /rsbackup
 mount -o compress,noatime,nodiratime /dev/sdb /rsbackup
 
+CONFIGURAZIONE DI UN SERVER DA BACKUPPARE
 
-NOTE SU INCLUSIONI ED ESCLUSIONI ----
 
-Per quanto riguarda gli include, si possono backuppare solo certe parti di macchina, 
-ad esempio
+NOTE SU INCLUSIONI ED ESCLUSIONI
+
+Per quanto riguarda gli include, si possono backuppare solo certe parti di
+macchina, ad esempio inserendo in filesystems.conf
 
 /etc/asterisk
 /usr/local
 
-backuppa quelle due sole directory. Per via delle opzioni files-from e dell'rsync che 
-parte da / (tra mille virgolette), il tutto risulta sotto /rsbackup/macchina/etc/asterisk 
-ovvero con percorso completo
+vengono backuppate quelle due sole directory. Per via delle opzioni --files-from
+e dell'rsync che parte dal ramo "/", il tutto risulta comunque backuppato sotto
+il percorso completo, ad esempio
 
-Per le esclusioni, occhio alla diversità
+/rsbackup/macchina/.work/etc/asterisk
+
+Per questo è possibile aggiungere mano a mano che lo si desidera parti di
+filesystem che si vogliono mettere sotto backup, senza problemi di struttura
+dell'albero delle directory sotto /rsbackup/macchina/,
+
+Per quanto riguarda le esclusioni (specificabili in excludes.conf), prestare
+attenzione alla diversità delle due sintassi possibili:
 
 voicemail/
 
 voicemail/**
 
-la prima non crea nemmeno la directory voicemail, la seconda crea la dir ma non backuppa niente
+La prima non crea nemmeno la directory voicemail, la seconda crea la directory
+ma non backuppa niente del suo contenuto. Tutto sta nel capire se si vuole
+mantenere la struttura completa sotto backup, eventaulmente senza contentuo.
+Nel dubbio conviene usare la seconda specifica.
 
 
------ 
+VARIE ED EVENTUALI
 
-per impedire a mutt di salvare la posta in uscita usare
+Per impedire a mutt di salvare la posta in uscita usare
 
-# more .muttrc 
+# more .muttrc
 set record="/dev/null"
