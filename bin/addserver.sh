@@ -5,7 +5,7 @@ if [ ! "${2}" ]; then
 
 	echo "Usage: $0 server_to_backup config_name [ mailto ]"
 
-else 
+else
 
 	HOST_NAME=$1
 	CONFIG_NAME=$2
@@ -34,7 +34,7 @@ else
 		# generating configuration file ...
 		cp $INSTALLDIR/etc/filesystems.conf.default $BACKUP_DIR/$CONFIG_NAME/conf/filesystems.conf
 		cp $INSTALLDIR/etc/exclude.conf.default $BACKUP_DIR/$CONFIG_NAME/conf/exclude.conf
-	
+
 		echo "RSYNC_HOST=$HOST_NAME" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
 		echo "RSYNC_FILESYSTEMS=$BACKUP_DIR/$CONFIG_NAME/conf/filesystems.conf" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
 		echo "RSYNC_EXCLUDES=$BACKUP_DIR/$CONFIG_NAME/conf/exclude.conf" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf

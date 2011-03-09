@@ -1,5 +1,5 @@
 
-Questa directory contine lo script da copiare in init.d per la partenza 
+Questa directory contine lo script da copiare in init.d per la partenza
 automatica dello scheduler
 
 # cp scheduler.init /etc/init.d/scheduler

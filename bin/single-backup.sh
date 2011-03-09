@@ -1,8 +1,8 @@
-#!/bin/bash 
+#!/bin/bash
 
 # ARG1: host da backuppare (e.g. esx-aiace.ciela.it)
 #
-# 
+#
 
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
 
@@ -84,7 +84,7 @@ now=$(date +%Y-%m-%dT%H:%M:%S)
 	--rsync-path="$RSYNC_EXEC" --rsh="$RSYNC_SSHCMD -p $RSYNC_PORT -i $RSYNC_SSH_KEY" \
 	--log-file=$LOGFILE_RSYNC \
 	$RSYNC_USER@$RSYNC_HOST:/ $BACKUP_DIR/$CONFIG_NAME/.work 2>&1 > /dev/null
-	
+
 return=$?
 
 if [  0 = $return -o 24 = $return ]; then
@@ -93,7 +93,7 @@ if [  0 = $return -o 24 = $return ]; then
 	btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/$CONFIG_NAME/$now >> $LOGFILE
 
 
-	if [ "${LEGATO}" ]; then 
+	if [ "${LEGATO}" ]; then
 		btrfs subvolume delete  $BACKUP_DIR/legato/$CONFIG_NAME 2>/dev/null >> $LOGFILE
 		return=$?
 		if [ "$return" == "0" -o "$return" == "12" ]; then # ERROR 12 means legato snaphost does non exist
@@ -106,7 +106,7 @@ if [  0 = $return -o 24 = $return ]; then
 	elenco=$(ls $BACKUP_DIR/$CONFIG_NAME | grep ^[0-9])
 	oldest=$(ls $BACKUP_DIR/$CONFIG_NAME | grep ^[0-9] | head -1)
 	kept=0
-	
+
 	for line in $elenco
 		do
 		orariobackup=$line
@@ -160,7 +160,7 @@ else
 		mutt -s "BACKUP ERROR - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
 	fi
 
-fi 
+fi
 
 savelog $LOGFILE > /dev/null 2>&1
 savelog $LOGFILE_RSYNC > /dev/null 2>&1
