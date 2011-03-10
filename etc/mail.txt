@@ -1,0 +1,12 @@
+Per modificare i filesystem da inserire nei backup e quelli da escludere,
+montare via nfs la directory remota lanciando il comando:
+
+mount esx-simca.cilea.it:/rsbackup/nome_server /mnt
+
+e modificare il contenuti dei file:
+
+/mnt/conf/filesystems.conf
+/mnt/conf/exclude.conf
+
+
+
