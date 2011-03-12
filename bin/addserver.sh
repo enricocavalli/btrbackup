@@ -41,7 +41,7 @@ else
 
 		if [ ${3} ]; then
 			echo "MAILTO=\"$3\"" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
-			mail -s "Host $HOST_NAME configurato per il backup" $3 < /dev/null
+			mail -s "Host $HOST_NAME configurato per il backup" $3 < $INSTALLDIR/etc/mail.txt
 		fi
 
 		# export via nfs for client restore
