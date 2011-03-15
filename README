@@ -22,6 +22,10 @@ mkfs.btrfs /dev/sdb
 mkdir /rsbackup
 mount -o compress,noatime,nodiratime /dev/sdb /rsbackup
 
+
+generare una chiave ssh
+
+
 CONFIGURAZIONE DI UN SERVER DA BACKUPPARE
 
 

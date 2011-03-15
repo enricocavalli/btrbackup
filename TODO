@@ -5,3 +5,5 @@ pid, ora, configurazione usata e mettere tutti in file di log
 
 * attenzione: se il filesystem di simca viene montato via nfs dopo che l'rsync è partito vengono backuppati ricorsivamente anche gli snapshot precendi
  forse si può evitare montando sotto posto standard che viene escluso di defualt, o facendo un umount come pre-backup
+
+
