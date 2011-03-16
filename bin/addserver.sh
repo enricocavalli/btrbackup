@@ -14,7 +14,7 @@ else
 
 	echo "Checking client configuration, please answer yes to fingerprint request"
 
-	ssh -i $INSTALLDIR/etc/chiave.dsa rsbackup@$HOST_NAME /bin/true
+	ssh -i $RSYNC_SSH_KEY rsbackup@$HOST_NAME /bin/true
 	return=$?
 
 	if ! [ $return = 0 ]; then
