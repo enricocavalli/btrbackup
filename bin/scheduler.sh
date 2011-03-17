@@ -46,7 +46,7 @@ while [ 1 ]; do
 		
 		#(sleep 15 && rm $lock) &
 		# TODO: cosa succede se job-runner ritorna non zero? mi resta appeso il file di lock?
-		$INSTALLDIR/bin/job-runner.sh -j $max_backups $hosts  &
+		$INSTALLDIR/bin/job-runner -j $max_backups $hosts  &
 		else 
 		echo "Backup still running ..." > /dev/null
 		fi

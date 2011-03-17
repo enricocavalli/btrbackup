@@ -1,0 +1,13 @@
+#!bin/bash
+
+log_message()
+{
+
+	local name="$1"
+	local pid="$2"
+	local message="$3"
+
+	echo "$(date "+%b %d %H:%M:%S") ${name}[${pid}] ${message}"
+
+
+}
