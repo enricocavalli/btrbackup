@@ -9,3 +9,7 @@ pid, ora, configurazione usata e mettere tutti in file di log
  forse si può evitare montando sotto posto standard che viene escluso di defualt, o facendo un umount come pre-backup
 
 
+* occorre studiare un metodo per limitare maggiormente l'rsync che viene
+lanciato come utente rsbackup. Forse mettendo in sudoers
+
+rsync --server
