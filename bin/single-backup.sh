@@ -16,6 +16,14 @@ LOGFILE="$INSTALLDIR/logs/$CONFIG_NAME/rsbackup.log"
 LOGFILE_RSYNC="$INSTALLDIR/logs/$CONFIG_NAME/rsbackup-rsync.log"
 LOCK="$INSTALLDIR/logs/$CONFIG_NAME/lock"
 
+
+. $INSTALLDIR/bin/functions
+
+pid=$$
+scriptname=$(basename ${0})
+logfile="$INSTALLDIR/logs/${scriptname}.log"  ### TODO pensare bene dove loggare
+
+
 if ! [ -f $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf ]; then
 	echo "Configuration file $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf not found"
 	exit 1
@@ -51,28 +59,6 @@ fi
 trap "rm -f $LOCK > /dev/null 2>&1" exit
 
 set +e
-
-date2stamp () {
-    date --utc --date "$1" +%s
-}
-
-dateDiff (){
-    case $1 in
-        -s)   sec=1;      shift;;
-        -m)   sec=60;     shift;;
-        -h)   sec=3600;   shift;;
-        -d)   sec=86400;  shift;;
-        -w)   sec=604800;  shift;;
-        *)    sec=86400;;
-    esac
-    dte1=$(date2stamp $1)
-    dte2=$(date2stamp $2)
-    diffSec=$((dte2-dte1))
-    if ((diffSec < 0)); then abs=-1; else abs=1; fi
-    echo $((diffSec/sec*abs))
-}
-
-
 
 lastone=$(ls $BACKUP_DIR/$CONFIG_NAME 2>/dev/null | grep ^[0-9] | sort | tail -1 | sed -e s'/T/ /')
 
