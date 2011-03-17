@@ -123,7 +123,7 @@ if [  0 = $return -o 24 = $return ]; then
                         fi
 
                 fi
- if [ $giorni -gt 30 ]; then
+		if [ $giorni -gt 30 ]; then
                         weekly[$settimana]=$((${weekly[$settimana]}+1))
                          if [ ${weekly[$settimana]} -gt 1 -o $giorni -gt $MAXDAYS ]; then
                         btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line >> $LOGFILE 2>&1
@@ -137,9 +137,9 @@ if [  0 = $return -o 24 = $return ]; then
 		log_message ${scriptname} ${pid} "Number of backups: $kept" >> ${LOGFILE}
 		log_message ${scriptname} ${pid} "Oldest backup: $oldest" >> ${LOGFILE}
 
-	 if ! [ -z $MAILTO ]; then
-                mutt -s "BACKUP OK - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
-        fi
+	if ! [ -z $MAILTO ]; then
+		mutt -s "BACKUP OK - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
+	fi
 
 else
 
