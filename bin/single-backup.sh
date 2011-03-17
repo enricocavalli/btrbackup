@@ -20,12 +20,12 @@ LOCK="$INSTALLDIR/logs/$CONFIG_NAME/lock"
 . $INSTALLDIR/bin/functions
 
 pid=$$
-scriptname=$(basename ${0})
-logfile="$INSTALLDIR/logs/${scriptname}.log"  ### TODO pensare bene dove loggare
+scriptname="rsbackup"
 
 
 if ! [ -f $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf ]; then
-	echo "Configuration file $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf not found"
+	# esco con errore senza avvisare tanto normalmente lo script e' invocato da job runner che scrive
+	# un messaggio opportuno
 	exit 1
 fi
 
@@ -44,16 +44,17 @@ MAXDAYS=${MAXDAYS:-60}
 
 set -e
 
+mkdir -p $INSTALLDIR/logs/$CONFIG_NAME
+
 if [ ! -d $BACKUP_DIR/$CONFIG_NAME ]; then
-	echo "Backup directory not found: $BACKUP_DIR/$CONFIG_NAME"
+	log_message ${scriptname} ${pid} "Backup directory  $BACKUP_DIR/$CONFIG_NAME not found" >> ${LOGFILE}
 	exit 1
 fi
 
-mkdir -p $INSTALLDIR/logs/$CONFIG_NAME
 
 if lockfile -! -l 43200 -r 0 "$LOCK" 2>&1 ; then
-  echo "unable to start rsync, lock file $LOCK exists"
-  exit 1
+	log_message ${scriptname} ${pid} "Another backup is running for this configuration" >> ${LOGFILE}  
+	exit 1
 fi
 
 trap "rm -f $LOCK > /dev/null 2>&1" exit
@@ -85,7 +86,7 @@ if [  0 = $return -o 24 = $return ]; then
 		if [ "$return" == "0" -o "$return" == "12" ]; then # ERROR 12 means legato snaphost does non exist
 			btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/legato/$CONFIG_NAME  >> $LOGFILE
 		else
-			echo "Cannot delete legato snaoshot $BACKUP_DIR/legato/$CONFIG_NAME" >> $LOGFILE
+			 log_message ${scriptname} ${pid} "Cannot delete legato snapshot $BACKUP_DIR/legato/$CONFIG_NAME" >>  ${LOGFILE}
 		fi
 	fi
 
@@ -133,8 +134,8 @@ if [  0 = $return -o 24 = $return ]; then
                 fi
                 done
 
-		echo "Number of backups: $kept" >> $LOGFILE
-		echo "Oldest backup: $oldest" >> $LOGFILE
+		log_message ${scriptname} ${pid} "Number of backups: $kept" >> ${LOGFILE}
+		log_message ${scriptname} ${pid} "Oldest backup: $oldest" >> ${LOGFILE}
 
 	 if ! [ -z $MAILTO ]; then
                 mutt -s "BACKUP OK - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
