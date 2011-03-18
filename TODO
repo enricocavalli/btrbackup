@@ -3,6 +3,8 @@ pid, ora, configurazione usata e mettere tutti in file di log
 
   in parte iniziato ---> si veda l'approccio usato in job-runner
 
+* file di log unificati e file di lock separati dalla directory di logging
+
 * script di pre/post-backup
 
 * attenzione: se il filesystem di simca viene montato via nfs dopo che l'rsync è partito vengono backuppati ricorsivamente anche gli snapshot precendi

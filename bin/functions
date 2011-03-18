@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 log_message()
 {
@@ -12,6 +12,20 @@ log_message()
 
 }
 
+
+log_output()
+{
+
+	local name="$1"
+	local pid="$2"
+	
+	while read line ; do
+	
+	echo "$(date "+%b %d %H:%M:%S") ${name}[${pid}] "${line}"
+	
+	done
+
+}
 
 date2stamp () {
     date --utc --date "$1" +%s
