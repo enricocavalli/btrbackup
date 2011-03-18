@@ -1,8 +1,6 @@
 * migliorare i messaggi di errore con riferimenti a cio' che si sta facendo
 pid, ora, configurazione usata e mettere tutti in file di log 
 
-  in parte iniziato ---> si veda l'approccio usato in job-runner
-
 * file di log unificati e file di lock separati dalla directory di logging
 
 * script di pre/post-backup
