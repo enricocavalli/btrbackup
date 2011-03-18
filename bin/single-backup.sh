@@ -12,9 +12,9 @@ if [ ! "${1}" ]; then
 fi
 
 CONFIG_NAME=$1
-LOGFILE="$INSTALLDIR/logs/$CONFIG_NAME/rsbackup.log"
-LOGFILE_RSYNC="$INSTALLDIR/logs/$CONFIG_NAME/rsbackup-rsync.log"
-LOCK="$INSTALLDIR/logs/$CONFIG_NAME/lock"
+LOGFILE="$INSTALLDIR/logs/${CONFIG_NAME}.log"
+LOGFILE_RSYNC="$INSTALLDIR/logs/${CONFIG_NAME}-rsync.log"
+LOCK="$INSTALLDIR/locks/$CONFIG_NAME"
 
 
 . $INSTALLDIR/bin/functions
@@ -43,8 +43,6 @@ fi
 MAXDAYS=${MAXDAYS:-60}
 
 set -e
-
-mkdir -p $INSTALLDIR/logs/$CONFIG_NAME
 
 if [ ! -d $BACKUP_DIR/$CONFIG_NAME ]; then
 	log_message ${scriptname} ${pid} "Backup directory  $BACKUP_DIR/$CONFIG_NAME not found" >> ${LOGFILE}

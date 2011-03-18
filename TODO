@@ -1,8 +1,3 @@
-* migliorare i messaggi di errore con riferimenti a cio' che si sta facendo
-pid, ora, configurazione usata e mettere tutti in file di log 
-
-* file di log unificati e file di lock separati dalla directory di logging
-
 * script di pre/post-backup
 
 * attenzione: se il filesystem di simca viene montato via nfs dopo che l'rsync è partito vengono backuppati ricorsivamente anche gli snapshot precendi
