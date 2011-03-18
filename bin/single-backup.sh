@@ -77,14 +77,17 @@ return=$?
 if [  0 = $return -o 24 = $return ]; then
 
 
-	btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/$CONFIG_NAME/$now >> $LOGFILE
+	btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/$CONFIG_NAME/$now | \
+		log_output ${scriptname} ${pid} >> $LOGFILE
 
 
 	if [ "${LEGATO}" ]; then
-		btrfs subvolume delete  $BACKUP_DIR/legato/$CONFIG_NAME 2>/dev/null >> $LOGFILE
+		btrfs subvolume delete  $BACKUP_DIR/legato/$CONFIG_NAME 2>&1 | \
+		log_output ${scriptname} ${pid} >> $LOGFILE
 		return=$?
 		if [ "$return" == "0" -o "$return" == "12" ]; then # ERROR 12 means legato snaphost does non exist
-			btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/legato/$CONFIG_NAME  >> $LOGFILE
+			btrfs subvolume snapshot $BACKUP_DIR/$CONFIG_NAME/.work $BACKUP_DIR/legato/$CONFIG_NAME 2>&1 | \
+			log_output ${scriptname} ${pid} >> $LOGFILE
 		else
 			 log_message ${scriptname} ${pid} "Cannot delete legato snapshot $BACKUP_DIR/legato/$CONFIG_NAME" >>  ${LOGFILE}
 		fi
@@ -108,7 +111,8 @@ if [  0 = $return -o 24 = $return ]; then
 		if [ $ore -lt 24 ]; then
                         hourly[$ore]=$((${hourly[$ore]}+1))
                         if [ ${hourly[$ore]} -gt 1 -a $ore -ge 1 ]; then
-                        btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line >> $LOGFILE 2>&1
+                        btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line 2>&1 | \
+				log_output ${scriptname} ${pid} >> $LOGFILE
                         else
                         kept=$(($kept + 1))
                         fi
@@ -117,7 +121,8 @@ if [  0 = $return -o 24 = $return ]; then
                         daily[$giornomese]=$((${daily[$giornomese]}+1))
 
                          if [ ${daily[$giornomese]} -gt 1 ]; then
-                        btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line >> $LOGFILE 2>&1
+                        btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line  2>&1 | \
+			log_output ${scriptname} ${pid} >> $LOGFILE
                         else
                         kept=$(($kept + 1))
                         fi
@@ -126,7 +131,8 @@ if [  0 = $return -o 24 = $return ]; then
 		if [ $giorni -gt 30 ]; then
                         weekly[$settimana]=$((${weekly[$settimana]}+1))
                          if [ ${weekly[$settimana]} -gt 1 -o $giorni -gt $MAXDAYS ]; then
-                        btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line >> $LOGFILE 2>&1
+                        btrfs subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line 2>&1 | \
+			log_output ${scriptname} ${pid} >> $LOGFILE
                         else
                         kept=$(($kept + 1))
                         fi
