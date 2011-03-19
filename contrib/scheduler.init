@@ -14,7 +14,7 @@ RSPATH=/root/rsbackup
 
 case "$1" in
     start)
-        $RSPATH/bin/scheduler.sh >&2 &
+        $RSPATH/bin/scheduler >&2 &
 	STATUS="$?"
 	echo "Starting scheduler ..."
 	if [ "$STATUS" -eq "0" ]; then
