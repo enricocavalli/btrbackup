@@ -24,7 +24,7 @@ case "$1" in
 	fi
         ;;
     stop)
-        killall scheduler.sh >&2 2>/dev/null
+        kill `cat $RSPATH/locks/scheduler.pid` >&2 2>/dev/null
 	STATUS=$?
 	if [ "$STATUS" -ne "0" ]; then
 		echo "Process not found ..."

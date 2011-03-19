@@ -9,6 +9,8 @@ pid=$$
 scriptname=$(basename ${0})
 logfile="$INSTALLDIR/logs/${scriptname}.log"
 
+echo ${pid} > ${INSTALLDIR}/locks/${scriptname}.pid
+
 while [ 1 ]; do
 
 	# ora corrente
