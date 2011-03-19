@@ -22,7 +22,7 @@ while [ 1 ]; do
 
 	if ! [ "$hosts" == "" ]; then
 
-		lockfile -l 3600 -r 0 "$lock" 2>&1
+		lockfile -l 3600 -r 0 "$lock" 2>&1 >/dev/null
 		return=$?
 		if [ "$return" == "0" ]; then
 	
