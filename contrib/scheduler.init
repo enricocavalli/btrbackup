@@ -11,6 +11,9 @@
 ### END INIT INFO
 
 RSPATH=/root/rsbackup
+HOME=/root
+
+export HOME
 
 case "$1" in
     start)
