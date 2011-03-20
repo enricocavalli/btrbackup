@@ -1,10 +1,16 @@
 * script di pre/post-backup
 
-* attenzione: se il filesystem di simca viene montato via nfs dopo che l'rsync è partito vengono backuppati ricorsivamente anche gli snapshot precendi
- forse si può evitare montando sotto posto standard che viene escluso di defualt, o facendo un umount come pre-backup
+* attenzione: se il filesystem di simca viene montato via nfs dopo che l'rsync è
+partito vengono backuppati ricorsivamente anche gli snapshot precendi forse si
+può evitare montando sotto posto standard che viene escluso di defualt, o
+facendo un umount come pre-backup
 
 
 * occorre studiare un metodo per limitare maggiormente l'rsync che viene
 lanciato come utente rsbackup. Forse mettendo in sudoers
 
 rsync --server
+
+* per come è strutturato il sistema, scheduler non ha visione di qunti job in
+parallelo vengono lanciati, solo job-runner ne è al corrente: è possibile
+modificare questo comportamento?
