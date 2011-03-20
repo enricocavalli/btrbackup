@@ -1,43 +1,123 @@
-INTRODUZIONE
+1. INTRODUZIONE
+
+rsbackup è un sistema di backup centralizzato basato su snapshot realizzati
+tramite rsync e btrfs. Il sistema è composto da tre componenti fondamentali:
+
+  - scheduler: come dice il nome stesso lancia i job di backup ad orari
+    prefissati
+  - job-runner: lanciato da schedulerm, serve per lanciare N
+    job di backup in parallelo
+  - single-backup: è il comando che si occupa della maggior parte del lavoro.
+    Invoca rsync collegandosi sulle macchine da backuppare come utente non
+    privilegiato.  L'rsync sulle macchine viene lanciato tramite "sudo rsync":
+    è infatti necessario avere i diritti di root per poter backuppare le
+    informazioni.
+
+Gli snapshot vengono esposti via NFS in sola lettura ai server che possono
+quindi facilmente procedere ad un restore tramite semplice cp o anche rsync.
+
+La politica di retention al momento è a carico di single-backup che è stato
+sviluppato imitando TimeMachine di Mac OS X (un backup orario nelle ultime
+ventiqattro ore, un backup giornaliero negli ultimi trenta giorni, un backup
+settimanale oltre i trena giorni, con un numero di giorni di retention 
+configurabile).
+
+Limitazioni: al momento non è stata presa in considerazione la possiblità di
+conservare ACL ed extended attributes (probabilmente non ancora implementati
+su btrfs).
+
+2. CONSIDERAZIONI DI SICUREZZA
+
+In un sistema di backup di questo tipo si può procedere essenzialmente in due
+modi: o tramite pull dai server remoti verso il server di backup, oppure tramite
+push dai server remoti verso il server centralizzato. Ogni soluzione ha i suoi
+pro e i suoi contro. Riteniamo tuttavia che la soluzione pull sia la più valida
+e versatile.
+
+2.1 SOLUZIONE PULL
+
+2.1.1 PRO
+
+ - Scheduling deciso in base alle condizioni del server di backup.
+ - La chiave ssh usata da root sul server di backup può essere protetta con ssh
+   agent.
+ - Non è necessario distribuire client di backup
+
+2.1.2 CONTRO
+
+  - Esiste una sola chiave: compromessa questa si ha accesso ai server remoti
+    (firewall e tcpwrappers permettendo ovviamente). Conviene quindi proteggere
+    la chiave con password e usare ssh-agent.  - L'utente non privilegiato
+    presente sulle macchine da backuppare deve avere la possibilità di lanciare
+    rsync come root (tramite sudo). In pratica questo utente è in grado di
+    fare qualsiasi cosa tramite rsync sulla macchina da backuppare.  Questo è
+    l'unico punto veramente debole della soluzione che merita futuri sviluppi.
+  - Il client da backuppare deve essere costantemente connesso (non è una
+    soluzione adatta per client mobili ad esempio).
+
+2.2 SOLUZIONE PUSH
+
+2.2.1 PRO
+ 
+  - Una soluzione push può essere idonea anche per client mobili.
+
+2.2.2 CONTRO
+
+  - E' necessario distribuire client di backup da tenere aggiornati.
+  - Il client deve girare con diritti di root sul server di backup. Diventa
+    quindi complesso fare in modo che i backup non siano reciprocamente
+    visibili.
+  - L'unica possibilità sarebbe girare come utente non privilegiato sul server
+    di backup e utilizzare l'opzione --fake-super che però porta problemi di
+    portabilità e su btrfs non sono ancora sviluppati gli extended attributes
+    necessari al funzionamento di questa opzione.  - La modalità di backup con
+    --fake-super pone poi una certa scomodità in fase di restore: diventerebbe
+    necessario un client di restore opportuno.  -
+
+3. DIPENDENZE
+
+Il software è stato sviluppato su Debian 6.0 e dipende da
+
+rsync >= 3.0.7, mutt, debianutils (per savelog), procmail (per lockfile),
+bash (recente, senz'altro >=3).
 
 
-DIPENDENZE
+4. INSTALLAZIONE
 
-Il software dipende da
+Scaricare il sistema di backup da http://????
 
-rsync >= 3.0.7
-mutt
-debianutils (per savelog)
-procmail (per lockfile)
-bash (recente, senz'altro >=3)
+4.1 Inizializzare il filesystem btrfs
 
-
-INSTALLAZIONE
-
-1. Inizializzare il filesystem btrfs
+Sul server di backup occorre innanzitutto inizializzare un filesystem btrfs.
 
 Il filesystem btrfs viene inizializzato senza opzioni particolari, ma è
 opportuno montarlo con le opzioni compress e noatime per questioni di
 occupazione spazio disco e performance.
 
-mkfs.btrfs /dev/sdb
-mkdir /rsbackup
-mount -o compress,noatime,nodiratime /dev/sdb /rsbackup
+# mkfs.btrfs /dev/sdb
+# mkdir /rsbackup
+# mount -o compress,noatime,nodiratime /dev/sdb /rsbackup
 
 Aggiungere  la riga corrispondente in /etc/fstab
 
-2. Generare  una chiave per l'autenticazione sui server da backuppare
+4.2 Generare  una chiave per l'autenticazione sui server da backuppare
 
-cd etc/
-ssh-keygen  -t dsa -C rsbackup-key -f chiave.dsa
+cd etc/ ssh-keygen  -t dsa -C rsbackup-key -f chiave.dsa
 
-Copiare la parte pubblica della chiave nello script di configurazione dei
-client (vedi contrib/config-client.sh)
+Copiare la parte pubblica della chiave nello script di configurazione dei client
+(vedi contrib/config-client.sh)
 
-CONFIGURAZIONE DI UN SERVER DA BACKUPPARE
+4.3 Configurazioni varie
 
-Sui server da backuppare deve essere creato un utente rsbackup in grado
-di eseguire rsync come utente root (tramite sudo).
+Per impedire a mutt di salvare la posta in uscita inserire la seguente riga in
+.muttrc dell'utente root:
+
+set record="/dev/null"
+
+5. CONFIGURAZIONE DI UN SERVER DA BACKUPPARE
+
+Sui server da backuppare deve essere creato un utente rsbackup in grado di
+eseguire rsync come utente root (tramite sudo).
 
 Il server deve accettare connessioni ssh dal server di backup e deve accettare
 connessioni ssh autenticate con la chiave generata in precedenza. Si veda
@@ -48,55 +128,46 @@ Lato server di backup viene semplicemente fatto girare il comando addserver.sh
 che si occupa di inizializzare il filesystem di base su cui andranno i backup
 e crea le entry in /etc/exports per esportare via nfs gli snapshot (in sola
 lettura) e i file di configurazione per i filesystem da incluedere e le
-eventuali esclusioni (in lettura/scrittura, per consentire personalizzazione 
+eventuali esclusioni (in lettura/scrittura, per consentire personalizzazione
 autonoma di questi dati).
 
-addserver.sh accetta tre argomenti: l'hostname o ip del server da backuppare,
-il nome che vogliamo dare al file di configurazione del server (si riflette
-anche sulla directory in cui vengono creati gli snapshot) e opzionalmente
-un indirizzo email per notificare all'amministratore del server l'esito dei 
-backup
+addserver.sh accetta tre argomenti: l'hostname o ip del server da backuppare, il
+nome che vogliamo dare al file di configurazione del server (si riflette anche
+sul nome della directory in cui vengono creati gli snapshot) e opzionalmente un
+indirizzo email per notificare all'amministratore del server l'esito dei backup.
 
-addserver.sh accetta tre argomenti: l'hostname o ip del server da backuppare,
-il nome che vogliamo dare al file di configurazione del server (si riflette
-anche sulla directory in cui vengono creati gli snapshot) e opzionalmente
-un indirizzo email per notificare all'amministratore del server l'esito dei 
-backup
-
-NOTE SU INCLUSIONI ED ESCLUSIONI
+6. NOTE SU INCLUSIONI ED ESCLUSIONI
 
 Per quanto riguarda gli include, si possono backuppare solo certe parti di
-macchina, ad esempio inserendo in filesystems.conf
+macchina. Ad esempio inserendo in filesystems.conf
 
-/etc/asterisk
-/usr/local
+/etc/asterisk /usr/local
 
-vengono backuppate quelle due sole directory. Per via delle opzioni --files-from
-e dell'rsync che parte dal ramo "/", il tutto risulta comunque backuppato sotto
-il percorso completo, ad esempio
+vengono backuppate quelle due sole directory.
+
+Poiché single-backup invoca rsync con l'opzione --files-from e al comando viene
+indicato come sorgente il ramo "/", ovvero
+
+rsync --file-from=[...] rsbackup@$HOST:/ /destination
+
+l'effetto pratico è che sotto la directory destinazione viene comunque
+ricreato il percorso completo dei file e directory oggetto di backup. Ad
+esempio avremo:
 
 /rsbackup/macchina/.work/etc/asterisk
 
-Per questo è possibile aggiungere mano a mano che lo si desidera parti di
+Per questo è possibile aggiungere, mano a mano che lo si desidera, parti di
 filesystem che si vogliono mettere sotto backup, senza problemi di struttura
-dell'albero delle directory sotto /rsbackup/macchina/,
+dell'albero delle directory che viene a crearsi sotto /rsbackup/macchina/.
 
 Per quanto riguarda le esclusioni (specificabili in excludes.conf), prestare
 attenzione alla diversità delle due sintassi possibili:
 
-voicemail/
-
-voicemail/**
+voicemail/ voicemail/**
 
 La prima non crea nemmeno la directory voicemail, la seconda crea la directory
-ma non backuppa niente del suo contenuto. Tutto sta nel capire se si vuole
-mantenere la struttura completa sotto backup, eventaulmente senza contentuo.
+sul server di backup ma dentro di essa non viene salvato alcun contenuto.
+Tutto sta nel capire se si vuole mantenere la struttura completa sotto backup,
+eventaulmente senza contentuo.
+
 Nel dubbio conviene usare la seconda specifica.
-
-
-VARIE ED EVENTUALI
-
-Per impedire a mutt di salvare la posta in uscita usare
-
-# more .muttrc
-set record="/dev/null"
