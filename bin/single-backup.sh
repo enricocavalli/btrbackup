@@ -18,6 +18,7 @@ LOCK="$INSTALLDIR/locks/$CONFIG_NAME"
 
 
 . $INSTALLDIR/bin/functions
+. $INSTALLDIR/bin/agent.sh
 
 pid=$$
 scriptname="rsbackup"

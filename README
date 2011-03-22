@@ -117,6 +117,10 @@ cd etc/ ssh-keygen  -t dsa -C rsbackup-key -f chiave.dsa
 Copiare la  parte pubblica della  chiave nello script di  configurazione dei
 client (vedi contrib/config-client.sh)
 
+Se la chiave privata  viene protetta da una passphrase, dopo ogni reboot è
+necessario attivare l'ssh-agent caricandovi la chiave in oggetto. Per farlo
+lanciare bin/start-agent.sh
+
 4.3 Configurazioni varie
 
 Per impedire a mutt di salvare la  posta in uscita inserire la seguente riga

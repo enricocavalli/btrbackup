@@ -12,6 +12,8 @@ else
 
 	. $INSTALLDIR/etc/rsbackup.conf
 
+	. $INSTALLDIR/bin/agent.sh
+
 	echo "Checking client configuration, please answer yes to fingerprint request"
 
 	ssh -i $RSYNC_SSH_KEY rsbackup@$HOST_NAME /bin/true
