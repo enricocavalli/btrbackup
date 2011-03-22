@@ -18,8 +18,12 @@ LOCK="$INSTALLDIR/locks/$CONFIG_NAME"
 
 
 . $INSTALLDIR/bin/functions
-. $INSTALLDIR/bin/agent.sh
 
+if [ -e "$INSTALLDIR/bin/agent.sh" ]; then
+
+	. $INSTALLDIR/bin/agent.sh
+
+fi
 pid=$$
 scriptname="rsbackup"
 

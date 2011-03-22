@@ -12,7 +12,11 @@ else
 
 	. $INSTALLDIR/etc/rsbackup.conf
 
-	. $INSTALLDIR/bin/agent.sh
+	if [ -e "$INSTALLDIR/bin/agent.sh" ]; then
+
+        . $INSTALLDIR/bin/agent.sh
+	
+	fi
 
 	echo "Checking client configuration, please answer yes to fingerprint request"
 
