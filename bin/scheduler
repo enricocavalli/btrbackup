@@ -18,7 +18,7 @@ while [ 1 ]; do
 
 	# TODO: trap segnali per rilettura file di conf 
 	# cerco hosts per il backup
-	hosts=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now | awk {'print $1'} | tr \\n ' ')
+	hosts=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now | awk {'print $1'} | tr '\n' ' ')
 
 	lock="$INSTALLDIR/locks/$(echo "$hosts" | md5sum | grep -o "[a-z0-9]\{32\}")"
 
@@ -33,7 +33,7 @@ while [ 1 ]; do
 		
 		for i in $hosts; do
 			# ulteriore cofigurazione del comando da laciare ...
-			pool=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now |grep $i| awk {'print $3'})
+			pool=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now |grep $i| awk {'print $NF'})
 
 			if [ "$pool" == "1" ]; then
 				max_backups=4
