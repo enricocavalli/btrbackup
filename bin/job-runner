@@ -33,7 +33,7 @@ for i in $HOSTS; do
 	if [ -f $INSTALLDIR/etc/hosts/$i.conf ]; then	
 		
 		log_message ${scriptname} ${pid} "starting backup with configuration ${i}" >> ${logfile} 
-		$INSTALLDIR/bin/single-backup.sh $i 2>&1 | log_output ${scriptname} ${pid} >> ${logfile} &
+		$INSTALLDIR/bin/single-backup $i 2>&1 | log_output ${scriptname} ${pid} >> ${logfile} &
 	else 
 		log_message ${scriptname} ${pid} "configuration ${i} not found" >> ${logfile}
 	fi 
