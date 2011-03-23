@@ -16,9 +16,9 @@ while [ 1 ]; do
 	# ora corrente
 	now=$(date +%H:%M)
 
-	# TODO: trap segnali per rilettura file di conf 
 	# cerco hosts per il backup
-	hosts=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now | awk {'print $1'} | tr '\n' ' ')
+	hosts=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now |\
+	        awk '{print $NF " " $1}'| sort -k 1 -n  | awk '{print $2}' | tr '\n' ' ')
 
 	lock="$INSTALLDIR/locks/$(echo "$hosts" | md5sum | grep -o "[a-z0-9]\{32\}")"
 

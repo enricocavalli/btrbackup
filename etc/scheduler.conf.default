@@ -1,4 +1,4 @@
 # configurazione scheduler
-# host time1 [ [time2] ... [timeN] ] pool(priority)
+# host time1 [ [time2] ... [timeN] ] order (whithin same HH:MM)
 host1.cilea.it 12:00 22:00 1
 host2.cilea.it 22:00 2
