@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 # demone scheduler
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
@@ -15,7 +15,6 @@ while [ 1 ]; do
 
 	# ora corrente
 	now=$(date +%H:%M)
-	now=22:00
 	# ordino le macchine da backuppare per pool e per ordine numerico all'interno del pool
 	hosts=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now | \
 	        awk '{ printf $NF; if ( $NF !~ "@") { printf  "@default"; } print " "$1; }'  |  \
@@ -42,9 +41,9 @@ while [ 1 ]; do
 		
 		log_message ${scriptname} ${pid} "running job-runner ${line}" >> ${logfile}
 		$INSTALLDIR/bin/job-runner ${line} 2>&1 | log_output ${scriptname} ${pid} >> ${logfile} &
-		 done	
 		
-
+		done	
+		fi
 		
 	fi
 
