@@ -10,7 +10,7 @@
 # Description:       backup scheduler
 ### END INIT INFO
 
-RSPATH=/root/rsbackup
+RSPATH=/root/btrbackup
 HOME=/root
 
 export HOME

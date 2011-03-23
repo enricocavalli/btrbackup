@@ -2,7 +2,7 @@
 
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
 
-source $INSTALLDIR/etc/rsbackup.conf
+source $INSTALLDIR/etc/btrbackup.conf
 
 
 test=`/bin/ps -ef | /bin/grep ssh-agent | /bin/grep -v grep  | /usr/bin/awk '{print $2}' | xargs`

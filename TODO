@@ -7,7 +7,7 @@ facendo un umount come pre-backup
 
 
 * occorre studiare un metodo per limitare maggiormente l'rsync che viene
-lanciato come utente rsbackup. Forse mettendo in sudoers
+lanciato come utente btrbackup. Forse mettendo in sudoers
 
 * FIXME: quando al primo backup viene generato un file di log molto verboso non viene inviata la mail dall'MTA.
 

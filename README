@@ -1,6 +1,18 @@
+0. INTRODUCTION
+
+A disk based backup system based on btrfs and rsync. Inspired from rsbackup
+(ZFS+FreeBSD+Rsync), see: 
+
+http://forums.freebsd.org/showthread.php?p=71162
+
+Snapshots are rotated using a mechanism similar to that of Mac OS X TimeMachine.
+
+At the moment all the documentation is in Italian.
+
+
 1. INTRODUZIONE
 
-rsbackup  è  un   sistema  di  backup  centralizzato   basato  su  snapshot
+btrbackup  è  un   sistema  di  backup  centralizzato   basato  su  snapshot
 realizzati tramite rsync  e btrfs. Il sistema è composto  da tre componenti
 fondamentali:
 
@@ -105,14 +117,14 @@ opportuno  montarlo con  le  opzioni  compress e  noatime  per questioni  di
 occupazione spazio disco e performance.
 
 # mkfs.btrfs /dev/sdb
-# mkdir /rsbackup
-# mount -o compress,noatime,nodiratime /dev/sdb /rsbackup
+# mkdir /btrbackup
+# mount -o compress,noatime,nodiratime /dev/sdb /btrbackup
 
 Aggiungere  la riga corrispondente in /etc/fstab
 
 4.2 Generare una chiave per l'autenticazione sui server da backuppare
 
-cd etc/ ssh-keygen  -t dsa -C rsbackup-key -f chiave.dsa
+cd etc/ ssh-keygen  -t dsa -C btrbackup-key -f chiave.dsa
 
 Copiare la  parte pubblica della  chiave nello script di  configurazione dei
 client (vedi contrib/config-client.sh)
@@ -130,7 +142,7 @@ set record="/dev/null"
 
 5. CONFIGURAZIONE DI UN SERVER DA BACKUPPARE
 
-Sui server da  backuppare deve essere creato un utente  rsbackup in grado di
+Sui server da  backuppare deve essere creato un utente  btrbackup in grado di
 eseguire rsync come utente root (tramite sudo).
 
 Il  server deve  accettare  connessioni  ssh dal  server  di  backup e  deve
@@ -163,17 +175,17 @@ vengono backuppate quelle due sole directory.
 Poiché single-backup invoca  rsync con l'opzione --files-from  e al comando
 viene indicato come sorgente il ramo "/", ovvero
 
-rsync --file-from=[...] rsbackup@$HOST:/ /destination
+rsync --file-from=[...] btrbackup@$HOST:/ /destination
 
 l'effetto  pratico è  che sotto  la directory  destinazione viene  comunque
 ricreato il  percorso completo dei  file e  directory oggetto di  backup. Ad
 esempio avremo:
 
-/rsbackup/macchina/.work/etc/asterisk
+/btrbackup/macchina/.work/etc/asterisk
 
 Per questo è possibile aggiungere, mano a mano che lo si desidera, parti di
 filesystem che si vogliono mettere sotto backup, senza problemi di struttura
-dell'albero delle directory che viene a crearsi sotto /rsbackup/macchina/.
+dell'albero delle directory che viene a crearsi sotto /btrbackup/macchina/.
 
 Per quanto riguarda le esclusioni (specificabili in excludes.conf), prestare
 attenzione alla diversità delle due sintassi possibili:

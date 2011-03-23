@@ -10,7 +10,7 @@ else
 	HOST_NAME=$1
 	CONFIG_NAME=$2
 
-	. $INSTALLDIR/etc/rsbackup.conf
+	. $INSTALLDIR/etc/btrbackup.conf
 
 	if [ -e "$INSTALLDIR/bin/agent.sh" ]; then
 
@@ -20,7 +20,7 @@ else
 
 	echo "Checking client configuration, please answer yes to fingerprint request"
 
-	ssh -i $RSYNC_SSH_KEY rsbackup@$HOST_NAME /bin/true
+	ssh -i $RSYNC_SSH_KEY btrbackup@$HOST_NAME /bin/true
 	return=$?
 
 	if ! [ $return = 0 ]; then
