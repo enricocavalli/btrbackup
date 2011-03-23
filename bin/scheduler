@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 # demone scheduler
 INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
@@ -15,10 +15,14 @@ while [ 1 ]; do
 
 	# ora corrente
 	now=$(date +%H:%M)
-
-	# cerco hosts per il backup
-	hosts=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now |\
-	        awk '{print $NF " " $1}'| sort -k 1 -n  | awk '{print $2}' | tr '\n' ' ')
+	now=22:00
+	# ordino le macchine da backuppare per pool e per ordine numerico all'interno del pool
+	hosts=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now | \
+	        awk '{ printf $NF; if ( $NF !~ "@") { printf  "@default"; } print " "$1; }'  |  \
+	        sed -e 's/@/ /' | sort -k2,2 -k1,1n | awk  '{print $2" "$3}' | tr '\n' '\1')
+	  
+	pools=$(echo -n $hosts | tr '\1' '\n' | awk '{print $1}' | sort -u)     
+	
 
 	lock="$INSTALLDIR/locks/$(echo "$hosts" | md5sum | grep -o "[a-z0-9]\{32\}")"
 
@@ -28,27 +32,20 @@ while [ 1 ]; do
 		return=$?
 		if [ "$return" == "0" ]; then
 	
-		# creo file per il comando da lanciare
-		# evito che venga lanciato all'iterazione successiva
+		(for i in $pools; do
+		concurrency=$(get_max_jobs $i)
+		echo -n "-j ${concurrency} " 
+		echo -n $hosts | tr '\1' '\n' | grep $i | awk '{print $2}' | tr '\n' ' '
+		echo
+		done
+		) | while read line ; do
 		
-		for i in $hosts; do
-			# ulteriore cofigurazione del comando da laciare ...
-			pool=$(cat $INSTALLDIR/etc/scheduler.conf |  sed -e 's/#.*//'| grep -v "^\s*$" | grep $now |grep $i| awk {'print $NF'})
+		log_message ${scriptname} ${pid} "running job-runner ${line}" >> ${logfile}
+		$INSTALLDIR/bin/job-runner ${line} 2>&1 | log_output ${scriptname} ${pid} >> ${logfile} &
+		 done	
+		
 
-			if [ "$pool" == "1" ]; then
-				max_backups=4
-			else
-				max_backups=2
-			fi
-		done 
-		# lancio job-runner.sh && rm $lock
 		
-		log_message ${scriptname} ${pid} "starting ${hosts} (${max_backups})" >> ${logfile}
-		
-		#(sleep 15 && rm $lock) &
-		# TODO: cosa succede se job-runner ritorna non zero? mi resta appeso il file di lock?
-		$INSTALLDIR/bin/job-runner -j ${max_backups} ${hosts} 2>&1 | log_output ${scriptname} ${pid} >> ${logfile} &
-		fi
 	fi
 
 	sleep 10

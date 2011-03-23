@@ -1,5 +1,16 @@
 #!/bin/bash
 
+get_max_jobs()
+{
+
+local pool="$1"
+
+max_jobs=$(grep "^${pool}" $INSTALLDIR/etc/pools.conf | awk '{print $2}')
+
+echo $max_jobs
+
+}
+
 log_message()
 {
 

@@ -1,0 +1,2 @@
+#pool max_parallel_backups
+default 4
