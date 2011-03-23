@@ -20,7 +20,7 @@ else
 
 	echo "Checking client configuration, please answer yes to fingerprint request"
 
-	ssh -i $RSYNC_SSH_KEY btrbackup@$HOST_NAME /bin/true
+	ssh -i $RSYNC_SSH_KEY $RSYNC_USER@$HOST_NAME /bin/true
 	return=$?
 
 	if ! [ $return = 0 ]; then
