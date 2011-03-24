@@ -45,6 +45,9 @@ if [ -f $BACKUP_DIR/$CONFIG_NAME/conf/additional.conf ]; then
 	. $BACKUP_DIR/$CONFIG_NAME/conf/additional.conf
 fi
 
+RSYNC_FILESYSTEMS=$BACKUP_DIR/$CONFIG_NAME/conf/filesystems.conf
+RSYNC_EXCLUDES=$BACKUP_DIR/$CONFIG_NAME/conf/exclude.conf
+
 MAXDAYS=${MAXDAYS:-60}
 
 set -e

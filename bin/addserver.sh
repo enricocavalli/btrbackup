@@ -42,8 +42,6 @@ else
 		cp $INSTALLDIR/etc/exclude.conf.default $BACKUP_DIR/$CONFIG_NAME/conf/exclude.conf
 
 		echo "RSYNC_HOST=$HOST_NAME" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
-		echo "RSYNC_FILESYSTEMS=$BACKUP_DIR/$CONFIG_NAME/conf/filesystems.conf" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
-		echo "RSYNC_EXCLUDES=$BACKUP_DIR/$CONFIG_NAME/conf/exclude.conf" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
 
 		if [ ${3} ]; then
 			echo "MAILTO=\"$3\"" >> $INSTALLDIR/etc/hosts/$CONFIG_NAME.conf
