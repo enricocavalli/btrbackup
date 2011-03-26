@@ -57,6 +57,10 @@ retention configurabile).
 Limitazioni: al momento non è  stata presa in considerazione la possiblità
 di  conservare   ACL  ed  extended  attributes   (probabilmente  non  ancora
 implementati su btrfs).
+rsync viene invocato con l'opzione --inplace per sfruttare al massimo la 
+capacita' di cow di btrfs ed essere efficienti in termini di spazio occupato.
+Si noti che cio' non consente l'uso di --sparse (le due opzioni sono in
+conflitto).
 
 2. CONSIDERAZIONI DI SICUREZZA
 
