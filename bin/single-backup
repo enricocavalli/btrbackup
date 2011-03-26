@@ -154,7 +154,7 @@ if [  0 = $return -o 24 = $return ]; then
 	fi
 
 else
-
+	log_message ${scriptname} ${pid} "Error running rsync, return code ${return}" >>  ${LOGFILE}
 	if ! [ -z $MAILTO ]; then
 		mutt -s "BACKUP ERROR - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
 	fi
