@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# Script per l'esecuzione dei backup
+
+while getopts "j:" OPZIONE
+
+do 
+	case $OPZIONE in
+		j ) parallel_jobs=$OPTARG;;
+	esac
+done
+
+shift $(($OPTIND - 1))
+
+MAX_BACKUPS=${parallel_jobs:-"2"}
+
+INSTALLDIR=$( (cd -P $(dirname $0) && pwd) | sed -e 's!/bin!!' )
+
+. $INSTALLDIR/bin/functions
+
+cat $INSTALLDIR/etc/scheduler.conf |\
+sed -e 's/#.*//'| grep -v "^\s*$" | \
+awk '{printf($1"\0")}' |\
+xargs -0 $INSTALLDIR/bin/job-runner -j $MAX_BACKUPS
+exit
