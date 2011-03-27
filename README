@@ -122,7 +122,7 @@ la più valida e versatile.
 
 Il software è stato  sviluppato su Debian 6.0 e dipende  da rsync >= 3.0.7,
 mutt,  debianutils (per  savelog), procmail  (per lockfile),  bash (recente,
-senz'altro >=3).
+senz'altro >=3), gawk.
 
 
 4. INSTALLAZIONE
