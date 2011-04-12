@@ -41,6 +41,7 @@ fi
 
 # load machine personanlizations
 # override delle variabili eventualmente definite
+# TODO: prevent shell injection by remote user
 if [ -f $BACKUP_DIR/$CONFIG_NAME/conf/additional.conf ]; then
 	. $BACKUP_DIR/$CONFIG_NAME/conf/additional.conf
 fi

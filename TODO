@@ -12,3 +12,8 @@ lanciato come utente btrbackup. Forse mettendo in sudoers
 * FIXME: quando al primo backup viene generato un file di log molto verboso non viene inviata la mail dall'MTA.
 
 rsync --server
+
+
+* sicurezza lato server: nei file di conf (additional.conf) un client può 
+specificare quello che vuole, anche azioni potenzialmetne dannose 
+(tramite ; e & ad esempio)
