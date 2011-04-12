@@ -219,3 +219,15 @@ contenuto. Tutto sta nel capire se  si vuole mantenere la struttura completa
 sotto backup, eventaulmente senza contenuto.
 
 Nel dubbio conviene usare la seconda specifica.
+
+7. RESTORE E PARAMETRI CONFIGURABILI DAL CLIENT
+
+Il client può montare via nfs (v3) il proprio ramo di snapshot e la propria
+directory di configurazione. Consigliamo di inserire delle righe di questo tipo
+in /etc/fstab:
+
+backup_server:/btrbackup/backup_dir	/restore nfs	ro,noauto,vers=3 0 0
+
+E' da considerare per il futuro NFSv4 ma per il momento non è chiaro come gestire
+l'autenticazione e idmap.
+
