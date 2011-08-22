@@ -19,33 +19,12 @@ specificare quello che vuole, anche azioni potenzialmetne dannose
 
 * nfs4
 
-sul server
-
-capire cosa server in hosts allow
-
+sul server -> hosts.allow
 portmap
 mountd
 idmapd 
 
-# filtro posta
-/btrbackup/filtro-posta 194.20.52.4(ro,fsid=0,no_root_squash,no_subtree_check,crossmnt)
-/btrbackup/filtro-posta/conf 194.20.52.4(rw,no_root_squash,no_subtree_check)
 
-
-sul client
-
-hosts.allow 
-(è veramente necessario ????)
-portmap: simca.cilea.it 131.175.9.105
-idmapd: simca.cilea.it 131.175.9.105
-
-
-
-
-
-fstab
-simca.cilea.it:/	/restore	nfs4	rw	0	0
-
-
-se si mette noauto non parte idmapd, però occorre capire come far partire 
-idmapd senza però montare al boot il fs /restore
+si può mantenere una configurazione mista tipo 3 e i mount 4 sembranno andare
+lo stesso, ma gli id non vengono mappati correttamente (sembra per nome e non
+per numero)
