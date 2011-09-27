@@ -1,7 +1,7 @@
 Per modificare i filesystem da inserire nei backup e quelli da escludere,
 montare via nfs la directory remota lanciando il comando:
 
-mount esx-simca.cilea.it:/btrbackup/nome_server/conf /mnt
+mount simca.cilea.it:/btrbackup/nome_server/conf /mnt
 
 e modificare il contenuti dei file:
 
@@ -13,7 +13,7 @@ Recover
 
 Montando via nfs con il comando:
 
-mount esx-simca.cilea.it:/btrbackup/nome_server /mnt
+mount simca.cilea.it:/btrbackup/nome_server /mnt
 
 e' possibile accedere agli snapshot presenti sul sistema di backup.
 
