@@ -32,7 +32,7 @@ else
 
 		mkdir $BACKUP_DIR/$CONFIG_NAME
 		mkdir $BACKUP_DIR/$CONFIG_NAME/conf
-		btrfs subvolume create $BACKUP_DIR/$CONFIG_NAME/.work
+		${BTRFS} subvolume create $BACKUP_DIR/$CONFIG_NAME/.work
 
 		# do not backup with legato
 		echo "+skip: *" > $BACKUP_DIR/$CONFIG_NAME/.nsr
