@@ -124,7 +124,7 @@ if [  0 = $return -o 24 = $return ]; then
                         kept=$(($kept + 1))
                         fi
                 fi
-                if [ $giorni -le 30 -a $ore -ge 24 ]; then
+                if [ $giorni -le 15 -a $ore -ge 24 ]; then
                         daily[$giornomese]=$((${daily[$giornomese]}+1))
 
                          if [ ${daily[$giornomese]} -gt 1 ]; then
@@ -135,7 +135,7 @@ if [  0 = $return -o 24 = $return ]; then
                         fi
 
                 fi
-		if [ $giorni -gt 30 ]; then
+		if [ $giorni -gt 15 ]; then
                         weekly[$settimana]=$((${weekly[$settimana]}+1))
                          if [ ${weekly[$settimana]} -gt 1 -o $giorni -gt $MAXDAYS ]; then
                         ${BTRFS} subvolume delete $BACKUP_DIR/$CONFIG_NAME/$line 2>&1 | \
