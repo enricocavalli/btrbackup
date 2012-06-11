@@ -151,13 +151,13 @@ if [  0 = $return -o 24 = $return ]; then
 		log_message ${scriptname} ${pid} "Oldest backup: $oldest" >> ${LOGFILE}
 
 	if ! [ -z $MAILTO ]; then
-		mutt -s "BACKUP OK - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
+		mutt -s "Backup SUCCESS - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
 	fi
 
 else
 	log_message ${scriptname} ${pid} "Error running rsync, return code ${return}" >>  ${LOGFILE}
 	if ! [ -z $MAILTO ]; then
-		mutt -s "BACKUP ERROR - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
+		mutt -s "Backup ERROR - $CONFIG_NAME" -a "$LOGFILE_RSYNC" -- $MAILTO < $LOGFILE
 	fi
 
 fi
